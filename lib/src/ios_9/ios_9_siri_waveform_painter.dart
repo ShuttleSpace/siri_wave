@@ -193,7 +193,7 @@ class IOS9SiriWaveformPainter extends CustomPainter {
   bool shouldRepaint(IOS9SiriWaveformPainter oldDelegate) {
     final oldController = oldDelegate.controller;
     return oldController.amplitude != controller.amplitude ||
-        oldController.speed != controller.speed;
+        oldController.speed != controller.speed && controller.isPlaying.value;
   }
 }
 

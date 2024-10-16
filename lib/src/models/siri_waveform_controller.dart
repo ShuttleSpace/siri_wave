@@ -2,7 +2,7 @@
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-import 'package:flutter/material.dart' show Color, Colors;
+import 'package:flutter/material.dart' show Color, Colors, ValueNotifier;
 
 /// A base class for controllers used to manage *Siri-style* waveforms.
 ///
@@ -18,13 +18,14 @@ sealed class SiriWaveformController {
   /// The [amplitude] defaults to `1.0` and must be within the `[0, 1]` range.
   ///
   /// The [speed] defaults to `0.2` and must be within the `[0, 1]` range.
-  SiriWaveformController({
-    this.amplitude = 1,
-    this.speed = .2,
-  })  : _interpolationAmplitude = amplitude,
+  SiriWaveformController(
+      {this.amplitude = 1, this.speed = .2, bool startImmedidately = false})
+      : _interpolationAmplitude = amplitude,
         _interpolationSpeed = speed,
         assert(amplitude >= 0 && amplitude <= 1),
-        assert(speed >= 0 && speed <= 1);
+        assert(speed >= 0 && speed <= 1) {
+    isPlaying.value = startImmedidately;
+  }
 
   /// The amplitude of the waveform.
   ///
@@ -65,6 +66,16 @@ sealed class SiriWaveformController {
       }
     }
   }
+
+  ValueNotifier<bool> isPlaying = ValueNotifier(false);
+
+  void start() {
+    isPlaying.value = true;
+  }
+
+  void stop() {
+    isPlaying.value = false;
+  }
 }
 
 /// A controller for managing *iOS 7 Siri-style* waveforms.
@@ -87,6 +98,7 @@ final class IOS7SiriWaveformController extends SiriWaveformController {
   IOS7SiriWaveformController({
     super.amplitude,
     super.speed,
+    super.startImmedidately,
     this.color = Colors.white,
     this.frequency = 6,
   }) : assert(frequency >= -20 && frequency <= 20);
@@ -117,5 +129,6 @@ final class IOS9SiriWaveformController extends SiriWaveformController {
   /// The [amplitude] defaults to `1.0` and must be within the `[0, 1]` range.
   ///
   /// The [speed] defaults to `0.2` and must be within the `[0, 1]` range.
-  IOS9SiriWaveformController({super.amplitude, super.speed});
+  IOS9SiriWaveformController(
+      {super.amplitude, super.speed, super.startImmedidately});
 }

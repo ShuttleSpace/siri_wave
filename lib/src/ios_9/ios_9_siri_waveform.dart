@@ -47,8 +47,12 @@ class IOS9SiriWaveformState extends State<IOS9SiriWaveform>
       // the duration value does not impact the animation in any way.
       duration: const Duration(seconds: 1),
     );
-    final IOS9SiriWaveformController(:amplitude, :speed) = widget.controller;
-    if (amplitude > 0 && speed > 0) _animationController.repeat();
+    final IOS9SiriWaveformController(:amplitude, :speed, :isPlaying) =
+        widget.controller;
+    if (amplitude > 0 && speed > 0 && isPlaying.value) {
+      _animationController.repeat();
+    }
+    isPlaying.addListener(_playingStateChangeListener);
     super.initState();
   }
 
@@ -56,16 +60,19 @@ class IOS9SiriWaveformState extends State<IOS9SiriWaveform>
   void didUpdateWidget(covariant IOS9SiriWaveform oldWidget) {
     super.didUpdateWidget(oldWidget);
     final isAnimating = _animationController.isAnimating;
-    final IOS9SiriWaveformController(:amplitude, :speed) = widget.controller;
-    if (isAnimating && (amplitude == 0 || speed == 0)) {
+    final IOS9SiriWaveformController(:amplitude, :speed, :isPlaying) =
+        widget.controller;
+    if (isAnimating && (amplitude == 0 || speed == 0 || !isPlaying.value)) {
       _animationController.stop(canceled: false);
-    } else if (!isAnimating && (amplitude > 0 && speed > 0)) {
+    } else if (!isAnimating &&
+        (amplitude > 0 && speed > 0 && isPlaying.value)) {
       _animationController.repeat();
     }
   }
 
   @override
   void dispose() {
+    widget.controller.isPlaying.dispose();
     _animationController.dispose();
     super.dispose();
   }
@@ -88,5 +95,17 @@ class IOS9SiriWaveformState extends State<IOS9SiriWaveform>
       animation: _animationController,
       builder: (_, __) => customPaint,
     );
+  }
+
+  void _playingStateChangeListener() {
+    if (widget.controller.isPlaying.value) {
+      if (!_animationController.isAnimating) {
+        _animationController.repeat();
+      }
+    } else {
+      if (_animationController.isAnimating) {
+        _animationController.stop();
+      }
+    }
   }
 }

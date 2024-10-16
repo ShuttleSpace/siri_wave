@@ -36,6 +36,7 @@ class IOS7SiriWaveformState extends State<IOS7SiriWaveform>
     );
     final IOS7SiriWaveformController(:amplitude, :speed) = widget.controller;
     if (amplitude > 0 && speed > 0) _animationController.repeat();
+    widget.controller.isPlaying.addListener(_playStateListener);
     super.initState();
   }
 
@@ -43,16 +44,19 @@ class IOS7SiriWaveformState extends State<IOS7SiriWaveform>
   void didUpdateWidget(covariant IOS7SiriWaveform oldWidget) {
     super.didUpdateWidget(oldWidget);
     final isAnimating = _animationController.isAnimating;
-    final IOS7SiriWaveformController(:amplitude, :speed) = widget.controller;
-    if (isAnimating && (amplitude == 0 || speed == 0)) {
+    final IOS7SiriWaveformController(:amplitude, :speed, :isPlaying) =
+        widget.controller;
+    if (isAnimating && (amplitude == 0 || speed == 0 || !isPlaying.value)) {
       _animationController.stop(canceled: false);
-    } else if (!isAnimating && (amplitude > 0 && speed > 0)) {
+    } else if (!isAnimating &&
+        (amplitude > 0 && speed > 0 && isPlaying.value)) {
       _animationController.repeat();
     }
   }
 
   @override
   void dispose() {
+    widget.controller.isPlaying.dispose();
     _animationController.dispose();
     super.dispose();
   }
@@ -71,5 +75,17 @@ class IOS7SiriWaveformState extends State<IOS7SiriWaveform>
       animation: _animationController,
       builder: (_, __) => customPaint,
     );
+  }
+
+  void _playStateListener() {
+    if (widget.controller.isPlaying.value) {
+      if (!_animationController.isAnimating) {
+        _animationController.repeat();
+      }
+    } else {
+      if (_animationController.isAnimating) {
+        _animationController.stop();
+      }
+    }
   }
 }

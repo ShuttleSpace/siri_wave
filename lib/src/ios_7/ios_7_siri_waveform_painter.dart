@@ -86,7 +86,7 @@ class IOS7SiriWaveformPainter extends CustomPainter {
     final oldController = oldDelegate.controller;
     return oldController.amplitude != controller.amplitude ||
         oldController.frequency != controller.frequency ||
-        oldController.speed != controller.speed;
+        oldController.speed != controller.speed && controller.isPlaying.value;
   }
 }
 

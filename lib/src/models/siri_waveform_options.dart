@@ -8,7 +8,8 @@ sealed class SiriWaveformOptions {
   /// Creates an instance of [SiriWaveformOptions].
   ///
   /// By default, the waveform has a [height] of `180` and a [width] of `360`.
-  const SiriWaveformOptions({this.height = 180, this.width = 360});
+  const SiriWaveformOptions(
+      {this.height = 180, this.width = 360, this.startImmediately = false});
 
   /// The height of the waveform.
   ///
@@ -19,6 +20,8 @@ sealed class SiriWaveformOptions {
   ///
   /// Defaults to `360`.
   final double width;
+
+  final bool startImmediately;
 }
 
 /// Represents the configuration options for an *iOS 7 Siri-style* waveform.

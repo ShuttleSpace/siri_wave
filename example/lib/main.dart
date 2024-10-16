@@ -21,9 +21,9 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
         primarySwatch: Colors.amber,
         switchTheme: SwitchThemeData(
-          thumbColor: MaterialStateProperty.all(Colors.amber),
-          trackColor: MaterialStateProperty.resolveWith(
-            (states) => states.contains(MaterialState.selected)
+          thumbColor: const WidgetStatePropertyAll(Colors.amber),
+          trackColor: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.selected)
                 ? Colors.amber.shade300
                 : Colors.grey.withOpacity(.5),
           ),
@@ -118,6 +118,20 @@ class _HomePageState extends State<HomePage> {
                 setState(() {});
               },
               selection: selection,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Switch(
+                  value: controller.isPlaying.value,
+                  onChanged: (v) {
+                    setState(() {
+                      if (v) {
+                        controller.start();
+                      } else {
+                        controller.stop();
+                      }
+                    });
+                  }),
             ),
             const Spacer(),
             const CustomDivider(),
